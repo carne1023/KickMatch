@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "896555878839",
+    "project_id": "kickmatch1023",
+    "storage_bucket": "kickmatch1023.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896555878839:android:4a752ebb8f886df265c032",
+        "android_client_info": {
+          "package_name": "com.example.kickmatch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPCoomR6Bhaw8GhKLKD9m-nh7V9mrBso0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

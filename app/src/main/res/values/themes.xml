@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.KickMatch" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="Theme.KickMatch" parent="Base.Theme.KickMatch" />
+    <style name="ShapeAppearanceOverlay.App.Corner.Small" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+</resources>
