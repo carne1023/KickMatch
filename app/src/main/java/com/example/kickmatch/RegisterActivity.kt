@@ -2,6 +2,7 @@ package com.example.kickmatch
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kickmatch.databinding.ActivityRegisterBinding
@@ -13,6 +14,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private var selectedUserType = "player" // player o field_admin
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,28 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.chipPlayer.setOnClickListener {
+            selectedUserType = "player"
+            binding.chipPlayer.isChecked = true
+            binding.chipFieldAdmin.isChecked = false
+
+            // Mostrar/ocultar campos según tipo
+            binding.tilPosition.visibility = View.VISIBLE
+            binding.tilFieldName.visibility = View.GONE
+            binding.tilFieldAddress.visibility = View.GONE
+        }
+
+        binding.chipFieldAdmin.setOnClickListener {
+            selectedUserType = "field_admin"
+            binding.chipPlayer.isChecked = false
+            binding.chipFieldAdmin.isChecked = true
+
+            // Mostrar/ocultar campos según tipo
+            binding.tilPosition.visibility = View.GONE
+            binding.tilFieldName.visibility = View.VISIBLE
+            binding.tilFieldAddress.visibility = View.VISIBLE
+        }
+
         // Checkbox términos
         binding.cbTerms.setOnCheckedChangeListener { _, isChecked ->
             binding.btnRegister.isEnabled = isChecked
@@ -49,13 +73,13 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
             val confirmPassword = binding.etConfirmPassword.text.toString().trim()
+            val phone = binding.etPhone.text.toString().trim()
 
-            if (validateFields(name, email, password, confirmPassword)) {
-                registerUser(name, email, password)
+            if (validateFields(name, email, password, confirmPassword, phone)) {
+                registerUser(name, email, password, phone)
             }
         }
 
-        // Ir a login
         binding.tvLogin.setOnClickListener {
             finish()
         }
@@ -74,7 +98,8 @@ class RegisterActivity : AppCompatActivity() {
         name: String,
         email: String,
         password: String,
-        confirmPassword: String
+        confirmPassword: String,
+        phone: String
     ): Boolean {
         if (name.isEmpty()) {
             binding.tilName.error = "El nombre es requerido"
@@ -119,6 +144,25 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.tilConfirmPassword.error = null
 
+        // Validaciones específicas para admin de canchas
+        if (selectedUserType == "field_admin") {
+            val fieldName = binding.etFieldName.text.toString().trim()
+            val fieldAddress = binding.etFieldAddress.text.toString().trim()
+
+            if (fieldName.isEmpty()) {
+                binding.tilFieldName.error = "El nombre de la cancha es requerido"
+                return false
+            }
+
+            if (fieldAddress.isEmpty()) {
+                binding.tilFieldAddress.error = "La dirección es requerida"
+                return false
+            }
+
+            binding.tilFieldName.error = null
+            binding.tilFieldAddress.error = null
+        }
+
         if (!binding.cbTerms.isChecked) {
             Toast.makeText(this, "Debes aceptar los términos y condiciones", Toast.LENGTH_SHORT).show()
             return false
@@ -127,42 +171,18 @@ class RegisterActivity : AppCompatActivity() {
         return true
     }
 
-    private fun registerUser(name: String, email: String, password: String) {
+    private fun registerUser(name: String, email: String, password: String, phone: String) {
         binding.btnRegister.isEnabled = false
 
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Guardar datos de perfil en Firestore
                     val userId = auth.currentUser?.uid
-                    val userData = hashMapOf(
-                        "name" to name,
-                        "email" to email,
-                        "phone" to "",
-                        "bio" to "",
-                        "photoUrl" to "",
-                        "createdAt" to System.currentTimeMillis()
-                    )
 
-                    userId?.let {
-                        firestore.collection("users").document(it)
-                            .set(userData)
-                            .addOnSuccessListener {
-                                Toast.makeText(
-                                    this,
-                                    "Registro exitoso",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                goToHome()
-                            }
-                            .addOnFailureListener { e ->
-                                Toast.makeText(
-                                    this,
-                                    "Error al guardar datos: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                binding.btnRegister.isEnabled = true
-                            }
+                    if (selectedUserType == "player") {
+                        createPlayerProfile(userId, name, email, phone)
+                    } else {
+                        createFieldAdminProfile(userId, name, email, phone)
                     }
                 } else {
                     binding.btnRegister.isEnabled = true
@@ -172,6 +192,90 @@ class RegisterActivity : AppCompatActivity() {
                         Toast.LENGTH_LONG
                     ).show()
                 }
+            }
+    }
+
+    private fun createPlayerProfile(userId: String?, name: String, email: String, phone: String) {
+        val position = binding.etPosition.text.toString().trim()
+
+        val userData = hashMapOf(
+            "name" to name,
+            "email" to email,
+            "phone" to phone,
+            "bio" to "",
+            "position" to position,
+            "photoUrl" to "",
+            "userType" to "player",
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        userId?.let {
+            firestore.collection("users").document(it)
+                .set(userData)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                    goToHome()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                    binding.btnRegister.isEnabled = true
+                }
+        }
+    }
+
+    private fun createFieldAdminProfile(userId: String?, name: String, email: String, phone: String) {
+        val fieldName = binding.etFieldName.text.toString().trim()
+        val fieldAddress = binding.etFieldAddress.text.toString().trim()
+
+        val userData = hashMapOf(
+            "name" to name,
+            "email" to email,
+            "phone" to phone,
+            "bio" to "",
+            "photoUrl" to "",
+            "userType" to "field_admin",
+            "fieldName" to fieldName,
+            "fieldAddress" to fieldAddress,
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        userId?.let {
+            firestore.collection("users").document(it)
+                .set(userData)
+                .addOnSuccessListener {
+                    createFieldDocument(userId, fieldName, fieldAddress)
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                    binding.btnRegister.isEnabled = true
+                }
+        }
+    }
+
+    private fun createFieldDocument(adminId: String, fieldName: String, fieldAddress: String) {
+        val fieldData = hashMapOf(
+            "name" to fieldName,
+            "address" to fieldAddress,
+            "adminId" to adminId,
+            "description" to "",
+            "amenities" to listOf<String>(),
+            "photos" to listOf<String>(),
+            "pricePerHour" to 0.0,
+            "rating" to 0.0,
+            "totalRatings" to 0,
+            "isActive" to true,
+            "createdAt" to System.currentTimeMillis()
+        )
+
+        firestore.collection("fields")
+            .add(fieldData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                goToHome()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al crear cancha: ${e.message}", Toast.LENGTH_SHORT).show()
+                binding.btnRegister.isEnabled = true
             }
     }
 

@@ -1,6 +1,8 @@
+
 package com.example.kickmatch
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -55,12 +57,20 @@ class SearchFieldsActivity : AppCompatActivity() {
             onFieldClick = { field ->
                 Toast.makeText(this, "Detalles de ${field.name}", Toast.LENGTH_SHORT).show()
             },
+
             onBookClick = { field ->
                 Toast.makeText(this, "Reservar ${field.name}", Toast.LENGTH_SHORT).show()
-            }
+            },
+            onEditClick = { },
+            onDeleteClick = { },
+            onToggleActiveClick = { },
+            showAdminControls = false // 👈 muy importante
         )
-        binding.rvFields.layoutManager = LinearLayoutManager(this)
-        binding.rvFields.adapter = fieldAdapter
+
+        binding.rvFields.apply {
+            layoutManager = LinearLayoutManager(this@SearchFieldsActivity)
+            adapter = fieldAdapter
+        }
     }
 
     private fun setupFilters() {

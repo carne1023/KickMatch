@@ -1,4 +1,18 @@
-<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/ic_launcher_background"/>
-    <foreground android:drawable="@drawable/ic_soccer"/>
-</adaptive-icon>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="#3F51B5"
+        android:pathData="M54,0a54,54 0 1,1 0,108a54,54 0 1,1 0,-108z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28a26,26 0 1,1 0,52a26,26 0 1,1 0,-52z" />
+
+    <path
+        android:fillColor="#3F51B5"
+        android:pathData="M54,38a16,16 0 1,1 0,32a16,16 0 1,1 0,-32z" />
+</vector>

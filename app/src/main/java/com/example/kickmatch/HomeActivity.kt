@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.example.kickmatch.adapter.PostAdapter
 import com.example.kickmatch.databinding.ActivityHomeBinding
 import com.example.kickmatch.model.Post
@@ -16,8 +17,10 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
     private lateinit var auth: FirebaseAuth
+    private lateinit var firestore: FirebaseFirestore
     private lateinit var postAdapter: PostAdapter
     private val posts = mutableListOf<Post>()
+    private var userType: String = "player"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +28,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+        firestore = FirebaseFirestore.getInstance()
 
         setupToolbar()
         setupRecyclerView()
@@ -32,6 +36,19 @@ class HomeActivity : AppCompatActivity() {
         loadDemoPosts()
         setupFab()
         setupBottomNavigation()
+        loadUserType()
+    }
+
+    private fun loadUserType() {
+        val userId = auth.currentUser?.uid ?: return
+
+        firestore.collection("users").document(userId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    userType = document.getString("userType") ?: "player"
+                }
+            }
     }
 
     private fun setupToolbar() {
@@ -117,13 +134,21 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_profile -> {
-                    // Ir al perfil
-                    startActivity(Intent(this, ProfileActivity::class.java))
+                    goToProfile()
                     true
                 }
                 else -> false
             }
         }
+    }
+
+    private fun goToProfile() {
+        val intent = if (userType == "field_admin") {
+            Intent(this, FieldAdminProfileActivity::class.java)
+        } else {
+            Intent(this, ProfileActivity::class.java)
+        }
+        startActivity(intent)
     }
 
     private fun loadDemoPosts() {
@@ -220,8 +245,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_profile -> {
-                // Ir al perfil
-                startActivity(Intent(this, ProfileActivity::class.java))
+                goToProfile()
                 true
             }
             R.id.action_notifications -> {

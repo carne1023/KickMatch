@@ -2,187 +2,141 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardField"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginBottom="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:layout_marginBottom="16dp"
+    app:cardElevation="2dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <ImageView
-            android:id="@+id/ivFieldImage"
+            android:id="@+id/iv_field_photo"
             android:layout_width="match_parent"
-            android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/field_placeholder"/>
-
-        <TextView
-            android:id="@+id/tvFieldDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:background="@drawable/badge_background"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
-            android:text="2.5 km"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toTopOf="@id/ivFieldImage"
-            app:layout_constraintEnd_toEndOf="@id/ivFieldImage"/>
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"/>
 
         <LinearLayout
-            android:id="@+id/llContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintTop_toBottomOf="@id/ivFieldImage">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvFieldName"
+                    android:id="@+id/tv_field_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    tools:text="Cancha Sintética Los Campeones"/>
+                    android:text="Nombre de la cancha"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
 
-                <TextView
-                    android:id="@+id/tvFieldRating"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_active"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#FF9800"
-                    tools:text="⭐ 4.5"/>
-
+                    android:text="Activa"
+                    style="@style/Widget.Material3.Chip.Assist"/>
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvFieldType"
-                android:layout_width="wrap_content"
+                android:id="@+id/tv_field_address"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:textSize="13sp"
-                android:textColor="@color/design_default_color_primary"
-                tools:text="Fútbol 5 • Sintética"/>
+                android:text="Dirección"
+                android:textSize="14sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@drawable/ic_location"
-                    app:tint="@android:color/darker_gray"/>
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvFieldAddress"
-                    android:layout_width="0dp"
+                    android:id="@+id/tv_field_rating"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/darker_gray"
-                    android:maxLines="1"
-                    android:ellipsize="end"
-                    tools:text="Cra 5 #10-20, Valle del Cauca"/>
+                    android:text="4.5"
+                    android:textStyle="bold"/>
 
+                <TextView
+                    android:id="@+id/tv_rating_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="(120)"
+                    android:textSize="12sp"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/tv_field_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$50/hora"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_amenities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Amenidades..."
+                android:textSize="12sp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tvFieldPrice"
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/switch_active"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/design_default_color_primary"
-                    tools:text="$80.000/hora"/>
+                    android:text="Activa"/>
 
-                <LinearLayout
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:text="Editar"
+                    app:icon="@drawable/ic_edit"
+                    style="@style/Widget.Material3.Button.TextButton"/>
 
-                    <ImageView
-                        android:id="@+id/ivParking"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_parking"
-                        app:tint="@color/design_default_color_primary"
-                        android:contentDescription="Parqueadero"/>
-
-                    <ImageView
-                        android:id="@+id/ivLighting"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_light"
-                        app:tint="@color/design_default_color_primary"
-                        android:contentDescription="Iluminación"/>
-
-                    <ImageView
-                        android:id="@+id/ivShowers"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_shower"
-                        app:tint="@color/design_default_color_primary"
-                        android:contentDescription="Duchas"/>
-
-                </LinearLayout>
-
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Eliminar"
+                    app:icon="@drawable/ic_delete"
+                    style="@style/Widget.Material3.Button.TextButton"/>
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
+            <Button
                 android:id="@+id/btnBook"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
                 android:text="Reservar"
-                android:textStyle="bold"
-                app:cornerRadius="8dp"/>
+                android:visibility="visible"
+                android:layout_gravity="center_horizontal"
+                style="@style/Widget.Material3.Button.OutlinedButton"/>
 
         </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

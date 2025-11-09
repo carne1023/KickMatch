@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -20,7 +19,6 @@
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
             app:title=""/>
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -87,7 +85,6 @@
                     android:orientation="vertical"
                     android:padding="24dp">
 
-                    <!-- Nombre completo -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilName"
                         android:layout_width="match_parent"
@@ -157,6 +154,92 @@
                             android:inputType="textPassword"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tipo de cuenta"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:layout_marginTop="16dp"/>
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_player"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Jugador"
+                            android:checked="true"
+                            style="@style/Widget.Material3.Chip.Filter"/>
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chip_field_admin"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Admin de Canchas"
+                            style="@style/Widget.Material3.Chip.Filter"/>
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_phone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Teléfono (opcional)"
+                            android:inputType="phone"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_position"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="visible">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_position"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Posición (opcional)"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_field_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_field_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Nombre de la cancha"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/til_field_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:visibility="gone">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_field_address"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Dirección"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
                     <com.google.android.material.checkbox.MaterialCheckBox
                         android:id="@+id/cbTerms"
                         android:layout_width="match_parent"
@@ -164,9 +247,7 @@
                         android:layout_marginTop="16dp"
                         android:text="Acepto los términos y condiciones"
                         android:textSize="13sp"/>
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton
@@ -207,7 +288,6 @@
                     android:layout_height="1dp"
                     android:layout_weight="1"
                     android:background="@android:color/darker_gray"/>
-
             </LinearLayout>
 
             <LinearLayout
@@ -244,10 +324,8 @@
                     app:iconGravity="textStart"
                     app:cornerRadius="12dp"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
-
             </LinearLayout>
 
-            <!-- Link a login -->
             <LinearLayout
                 android:id="@+id/llLogin"
                 android:layout_width="wrap_content"
@@ -278,11 +356,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackground"/>
-
             </LinearLayout>
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
