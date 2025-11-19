@@ -199,18 +199,20 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/til_position"
+                    android:id="@+id/tilPosition"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actvPosition"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:visibility="visible">
+                        android:hint="Posición en el campo"
+                        android:inputType="none" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_position"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Posición (opcional)"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/til_field_name"

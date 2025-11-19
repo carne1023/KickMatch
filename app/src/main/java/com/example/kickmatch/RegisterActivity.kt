@@ -1,8 +1,10 @@
 package com.example.kickmatch
 
+import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kickmatch.databinding.ActivityRegisterBinding
@@ -26,6 +28,7 @@ class RegisterActivity : AppCompatActivity() {
 
         setupToolbar()
         setupListeners()
+        setupPositionSelector()
     }
 
     private fun setupToolbar() {
@@ -92,6 +95,23 @@ class RegisterActivity : AppCompatActivity() {
         binding.btnFacebook.setOnClickListener {
             Toast.makeText(this, "Registro con Facebook (Demo)", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun setupPositionSelector() {
+        val positions = listOf(
+            "Portero",
+            "Defensa central",
+            "Lateral derecho",
+            "Lateral izquierdo",
+            "Mediocentro defensivo",
+            "Mediocentro ofensivo",
+            "Extremo derecho",
+            "Extremo izquierdo",
+            "Delantero centro"
+        )
+
+        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, positions)
+        binding.actvPosition.setAdapter(adapter)
     }
 
     private fun validateFields(
@@ -196,14 +216,13 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun createPlayerProfile(userId: String?, name: String, email: String, phone: String) {
-        val position = binding.etPosition.text.toString().trim()
+
 
         val userData = hashMapOf(
             "name" to name,
             "email" to email,
             "phone" to phone,
             "bio" to "",
-            "position" to position,
             "photoUrl" to "",
             "userType" to "player",
             "createdAt" to System.currentTimeMillis()
