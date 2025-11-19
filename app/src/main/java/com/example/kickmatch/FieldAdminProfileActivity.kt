@@ -73,12 +73,6 @@ class FieldAdminProfileActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         fieldAdapter = FieldAdapter(
             fields = fields,
-            onFieldClick = { field ->
-                val intent = Intent(this, EditFieldActivity::class.java)
-                intent.putExtra("fieldId", field.id)
-                startActivity(intent)
-            },
-            onBookClick = { },
             onEditClick = { field ->
                 val intent = Intent(this, EditFieldActivity::class.java)
                 intent.putExtra("fieldId", field.id)
@@ -98,7 +92,6 @@ class FieldAdminProfileActivity : AppCompatActivity() {
             adapter = fieldAdapter
         }
     }
-
     private fun setupListeners() {
         binding.ivProfilePhoto.setOnClickListener { if (isEditMode) selectImage() }
         binding.btnChangePhoto.setOnClickListener { selectImage() }

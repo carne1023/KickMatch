@@ -57,14 +57,12 @@ class SearchFieldsActivity : AppCompatActivity() {
             onFieldClick = { field ->
                 Toast.makeText(this, "Detalles de ${field.name}", Toast.LENGTH_SHORT).show()
             },
-
             onBookClick = { field ->
-                Toast.makeText(this, "Reservar ${field.name}", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, FieldDetailActivity::class.java)
+                intent.putExtra("fieldId", field.id)
+                startActivity(intent)
             },
-            onEditClick = { },
-            onDeleteClick = { },
-            onToggleActiveClick = { },
-            showAdminControls = false // 👈 muy importante
+            showAdminControls = false
         )
 
         binding.rvFields.apply {

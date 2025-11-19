@@ -22,6 +22,18 @@
         android:theme="@style/Theme.Material3.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".BookFieldActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BookingFieldActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyBookingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FieldDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".AddFieldActivity"
             android:exported="false" />
         <activity android:name=".EditFieldActivity" />
