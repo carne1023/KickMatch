@@ -1,6 +1,5 @@
 package com.example.kickmatch
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -110,8 +109,14 @@ class RegisterActivity : AppCompatActivity() {
             "Delantero centro"
         )
 
-        val adapter = ArrayAdapter(this, R.layout.simple_list_item_1, positions)
+        // CORRECCIÓN: Usar android.R.layout.simple_dropdown_item_1line para el selector
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, positions)
         binding.actvPosition.setAdapter(adapter)
+
+        // Hacer que se muestre el dropdown al hacer clic
+        binding.actvPosition.setOnClickListener {
+            binding.actvPosition.showDropDown()
+        }
     }
 
     private fun validateFields(
@@ -216,7 +221,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun createPlayerProfile(userId: String?, name: String, email: String, phone: String) {
+        if (userId == null) {
+            binding.btnRegister.isEnabled = true
+            Toast.makeText(this, "Error: Usuario no válido", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        // Obtener la posición seleccionada (puede estar vacía)
+        val position = binding.actvPosition.text.toString().trim()
 
         val userData = hashMapOf(
             "name" to name,
@@ -225,24 +237,30 @@ class RegisterActivity : AppCompatActivity() {
             "bio" to "",
             "photoUrl" to "",
             "userType" to "player",
-            "createdAt" to System.currentTimeMillis()
+            "position" to position,  // Agregar la posición
+            "createdAt" to System.currentTimeMillis(),
+            "updatedAt" to System.currentTimeMillis()
         )
 
-        userId?.let {
-            firestore.collection("users").document(it)
-                .set(userData)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                    goToHome()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
-                    binding.btnRegister.isEnabled = true
-                }
-        }
+        firestore.collection("users").document(userId)
+            .set(userData)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                goToHome()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                binding.btnRegister.isEnabled = true
+            }
     }
 
     private fun createFieldAdminProfile(userId: String?, name: String, email: String, phone: String) {
+        if (userId == null) {
+            binding.btnRegister.isEnabled = true
+            Toast.makeText(this, "Error: Usuario no válido", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val fieldName = binding.etFieldName.text.toString().trim()
         val fieldAddress = binding.etFieldAddress.text.toString().trim()
 
@@ -255,20 +273,19 @@ class RegisterActivity : AppCompatActivity() {
             "userType" to "field_admin",
             "fieldName" to fieldName,
             "fieldAddress" to fieldAddress,
-            "createdAt" to System.currentTimeMillis()
+            "createdAt" to System.currentTimeMillis(),
+            "updatedAt" to System.currentTimeMillis()
         )
 
-        userId?.let {
-            firestore.collection("users").document(it)
-                .set(userData)
-                .addOnSuccessListener {
-                    createFieldDocument(userId, fieldName, fieldAddress)
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
-                    binding.btnRegister.isEnabled = true
-                }
-        }
+        firestore.collection("users").document(userId)
+            .set(userData)
+            .addOnSuccessListener {
+                createFieldDocument(userId, fieldName, fieldAddress)
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error al guardar datos: ${e.message}", Toast.LENGTH_SHORT).show()
+                binding.btnRegister.isEnabled = true
+            }
     }
 
     private fun createFieldDocument(adminId: String, fieldName: String, fieldAddress: String) {
@@ -283,7 +300,8 @@ class RegisterActivity : AppCompatActivity() {
             "rating" to 0.0,
             "totalRatings" to 0,
             "isActive" to true,
-            "createdAt" to System.currentTimeMillis()
+            "createdAt" to System.currentTimeMillis(),
+            "updatedAt" to System.currentTimeMillis()
         )
 
         firestore.collection("fields")
