@@ -3,11 +3,15 @@ package com.example.kickmatch.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.kickmatch.R
 import com.example.kickmatch.databinding.ItemFieldBinding
 import com.example.kickmatch.model.Field
+import com.example.kickmatch.utils.AmenitiesIcons
 
 class FieldAdapter(
     private val fields: List<Field>,
@@ -40,6 +44,7 @@ class FieldAdapter(
 
         fun bind(field: Field) {
             binding.apply {
+
                 tvFieldName.text = field.name
                 tvFieldAddress.text = field.address
                 tvFieldPrice.text = "$${field.pricePerHour}/hora"
@@ -63,18 +68,42 @@ class FieldAdapter(
                     ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
                 }
 
-                val amenitiesText = if (field.amenities.isNotEmpty()) {
-                    field.amenities.take(3).joinToString(", ")
+                containerAmenities.removeAllViews()
+
+                if (field.amenities.isNullOrEmpty()) {
+
+                    val tv = TextView(itemView.context).apply {
+                        text = "Sin amenidades"
+                        textSize = 12f
+                    }
+                    containerAmenities.addView(tv)
+
                 } else {
-                    "Sin amenidades"
+                    field.amenities.forEach { amenityId ->
+                        val iconView = ImageView(itemView.context)
+
+                        iconView.setImageResource(
+                            AmenitiesIcons.getIconForAmenity(amenityId)
+                        )
+
+                        val size = itemView.resources
+                            .getDimensionPixelSize(R.dimen.amenity_icon_size)
+
+                        val params = LinearLayout.LayoutParams(size, size)
+                        params.setMargins(12, 0, 12, 0)
+
+                        iconView.layoutParams = params
+
+                        containerAmenities.addView(iconView)
+                    }
                 }
-                tvAmenities.text = amenitiesText
 
                 root.setOnClickListener {
                     onFieldClick?.invoke(field)
                 }
 
                 if (showAdminControls) {
+
                     btnEdit.visibility = View.VISIBLE
                     btnDelete.visibility = View.VISIBLE
                     switchActive.visibility = View.VISIBLE
@@ -89,7 +118,9 @@ class FieldAdapter(
                             onToggleActiveClick?.invoke(field)
                         }
                     }
+
                 } else {
+
                     btnEdit.visibility = View.GONE
                     btnDelete.visibility = View.GONE
                     switchActive.visibility = View.GONE

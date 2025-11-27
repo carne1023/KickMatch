@@ -4,9 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.kickmatch.adapter.AmenityAdapter
 import com.example.kickmatch.databinding.ActivityFieldDetailBinding
@@ -35,7 +36,6 @@ class FieldDetailActivity : AppCompatActivity() {
             field = intent.getSerializableExtra("field_data") as? Field
             field?.let { displayFieldData(it) }
         } else {
-            // Cargar desde Firebase usando fieldId
             val fieldId = intent.getStringExtra("fieldId")
             if (!fieldId.isNullOrEmpty()) {
                 loadFieldFromFirebase(fieldId)
@@ -58,13 +58,13 @@ class FieldDetailActivity : AppCompatActivity() {
         binding.btnReserve.setOnClickListener {
             field?.let { currentField ->
                 if (isFromGeoapify) {
-                    Toast.makeText(
-                        this,
-                        "Esta es una cancha externa. Por favor, contacta directamente usando:\n${currentField.phoneNumber}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    val message = if (currentField.phoneNumber.isNotEmpty()) {
+                        "Esta es una cancha externa. Por favor, contacta directamente usando:\n${currentField.phoneNumber}"
+                    } else {
+                        "Esta es una cancha externa. Contacta directamente para hacer tu reserva."
+                    }
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 } else {
-                    // Para canchas de Firebase, proceder con la reserva normal
                     val intent = Intent(this, BookFieldActivity::class.java)
                     intent.putExtra("fieldId", currentField.id)
                     intent.putExtra("fieldName", currentField.name)
@@ -117,7 +117,12 @@ class FieldDetailActivity : AppCompatActivity() {
             supportActionBar?.title = field.name
             tvFieldName.text = field.name
             tvFieldAddress.text = field.address
-            tvFieldPrice.text = "$${field.pricePerHour.toInt()}/hora"
+
+            if (field.pricePerHour > 0) {
+                tvFieldPrice.text = "$${field.pricePerHour.toInt()}/hora"
+            } else {
+                tvFieldPrice.text = "Consultar precio"
+            }
 
             tvFieldRating.text = String.format("%.1f", field.rating)
             tvRatingCount.text = "(${field.totalRatings} reseñas)"
@@ -137,23 +142,13 @@ class FieldDetailActivity : AppCompatActivity() {
 
             // Teléfono
             if (field.phoneNumber.isNotEmpty()) {
-                tvPhoneNumber.text = field.phoneNumber
+                tvPhoneNumber.text = "📞 ${field.phoneNumber}"
                 tvPhoneNumber.visibility = View.VISIBLE
             } else {
                 tvPhoneNumber.visibility = View.GONE
             }
 
-            // Fotos
-            if (field.photos.isNotEmpty()) {
-                Glide.with(this@FieldDetailActivity)
-                    .load(field.photos[0])
-                    .placeholder(R.drawable.ic_stadium)
-                    .error(R.drawable.ic_stadium)
-                    .centerCrop()
-                    .into(ivFieldPhoto)
-            } else {
-                ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
-            }
+            loadFieldPhoto(field)
 
             if (field.amenities.isNotEmpty()) {
                 setupAmenities(field.amenities)
@@ -177,6 +172,71 @@ class FieldDetailActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun loadFieldPhoto(field: Field) {
+        try {
+            // Intentamos obtener la foto (sea de la lista o el campo imageUrl)
+            val photoData = field.photos.firstOrNull()?.takeIf { it.isNotBlank() }
+                ?: field.imageUrl
+
+            if (!photoData.isNullOrBlank()) {
+                // VERIFICAMOS: ¿Es una URL normal o es nuestro código Base64?
+                if (photoData.startsWith("http") || photoData.startsWith("https")) {
+                    // Es una URL normal (Geoapify o internet), usar Glide como siempre
+                    Glide.with(this)
+                        .load(photoData)
+                        .placeholder(R.drawable.ic_stadium)
+                        .error(R.drawable.ic_stadium)
+                        .centerCrop()
+                        .into(binding.ivFieldPhoto)
+                } else {
+                    // El truco de base64: decodificar y mostrar
+                    try {
+                        val decodedString = Base64.decode(photoData, Base64.DEFAULT)
+                        val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                        binding.ivFieldPhoto.setImageBitmap(decodedByte)
+                    } catch (e: Exception) {
+                        // Si falla la conversión, ponemos el placeholder
+                        binding.ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
+                    }
+                }
+            } else {
+                // No hay datos de foto
+                binding.ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
+            }
+        } catch (e: Exception) {
+            binding.ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
+        }
+    }
+
+    //Este es viejo (por ahora)
+   /** private fun loadFieldPhoto(field: Field) {
+        try {
+            val photoUrl = field.photos.firstOrNull()?.takeIf { it.isNotBlank() }
+
+            if (photoUrl != null) {
+                Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.ic_stadium)
+                    .error(R.drawable.ic_stadium)
+                    .centerCrop()
+                    .into(binding.ivFieldPhoto)
+            } else if (field.imageUrl.isNotBlank()) {
+
+                Glide.with(this)
+                    .load(field.imageUrl)
+                    .placeholder(R.drawable.ic_stadium)
+                    .error(R.drawable.ic_stadium)
+                    .centerCrop()
+                    .into(binding.ivFieldPhoto)
+            } else {
+                // Si no hay fotos, usar placeholder
+                binding.ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
+            }
+        } catch (e: Exception) {
+            binding.ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
+        }
+    } **/
 
     private fun setupAmenities(amenityIds: List<String>) {
         val allAmenities = Amenity.getCommonAmenities()

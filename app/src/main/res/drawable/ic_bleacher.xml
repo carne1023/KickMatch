@@ -1,0 +1,45 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Filas de graderías -->
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M3,9h18" />
+
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M5,13h14" />
+
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M7,17h10" />
+
+    <!-- Personas arriba -->
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M6,6a2,2 0 1,0 0,-0.01" />
+
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M12,6a2,2 0 1,0 0,-0.01" />
+
+    <path
+        android:strokeColor="#7B1FA2"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M18,6a2,2 0 1,0 0,-0.01" />
+
+</vector>

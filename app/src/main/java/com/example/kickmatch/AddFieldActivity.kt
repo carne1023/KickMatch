@@ -5,6 +5,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Toast
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -163,12 +167,40 @@ class AddFieldActivity : AppCompatActivity() {
         binding.progressBar.visibility = android.view.View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        uploadPhotos { photoUrls ->
-            saveFieldToFirestore(name, address, description, price, photoUrls)
+        val firstPhotoUri = selectedPhotos[0]
+        val base64Image = encodeImageToBase64(firstPhotoUri)
+
+        if (base64Image != null) {
+            // Simulacion de subir foto pero con base64
+            saveFieldToFirestore(name, address, description, price, listOf(base64Image))
+        } else {
+            binding.progressBar.visibility = android.view.View.GONE
+            binding.btnSave.isEnabled = true
+            Toast.makeText(this, "Error al procesar la imagen", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun uploadPhotos(onComplete: (List<String>) -> Unit) {
+    private fun encodeImageToBase64(imageUri: Uri): String? {
+        return try {
+            val inputStream = contentResolver.openInputStream(imageUri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+
+            // Se comprime durisimo el bitmap
+            val scaledBitmap = Bitmap.createScaledBitmap(bitmap, 800, 800, true)
+
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 40, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+
+            // Retorna el string en Base64
+            Base64.encodeToString(byteArray, Base64.DEFAULT)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+   /** private fun uploadPhotos(onComplete: (List<String>) -> Unit) {
         val userId = auth.currentUser?.uid
         if (userId.isNullOrEmpty()) {
             binding.progressBar.visibility = android.view.View.GONE
@@ -217,7 +249,7 @@ class AddFieldActivity : AppCompatActivity() {
                     ).show()
                 }
         }
-    }
+    } **/
 
     private fun saveFieldToFirestore(
         name: String,
