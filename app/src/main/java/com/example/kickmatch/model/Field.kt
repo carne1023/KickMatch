@@ -1,5 +1,7 @@
 package com.example.kickmatch.model
 
+import java.io.Serializable
+
 data class Field(
     val id: String = "",
     val adminId: String = "",
@@ -25,4 +27,6 @@ data class Field(
     val amenities: List<String> = emptyList(),
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
-)
+): Serializable
+
+

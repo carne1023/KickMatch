@@ -6,8 +6,10 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kickmatch.databinding.ActivityBookFieldBinding
+import com.example.kickmatch.model.Field
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,14 +36,20 @@ class BookFieldActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
-        fieldId = intent.getStringExtra("fieldId") ?: ""
-        fieldName = intent.getStringExtra("fieldName") ?: ""
-        pricePerHour = intent.getDoubleExtra("pricePerHour", 0.0)
+        val fieldFromIntent = intent.getSerializableExtra("field") as? Field
 
-        if (fieldId.isEmpty()) {
-            Toast.makeText(this, "Error: Datos de cancha inválidos", Toast.LENGTH_SHORT).show()
-            finish()
-            return
+        if (fieldFromIntent != null) {
+            fieldId = fieldFromIntent.id
+            fieldName = fieldFromIntent.name
+            pricePerHour = fieldFromIntent.pricePerHour
+        } else {
+            fieldId = intent.getStringExtra("fieldId") ?: ""
+            fieldName = intent.getStringExtra("fieldName") ?: ""
+            pricePerHour = intent.getDoubleExtra("pricePerHour", 0.0)
+
+            if (fieldName.isEmpty()) {
+                fieldName = "Cancha no seleccionada"
+            }
         }
 
         setupToolbar()
@@ -59,6 +67,11 @@ class BookFieldActivity : AppCompatActivity() {
     private fun setupViews() {
         binding.tvFieldName.text = fieldName
         updatePriceDisplay()
+
+        if (fieldId.isEmpty() || pricePerHour <= 0) {
+            binding.btnConfirmBooking.isEnabled = false
+            Toast.makeText(this, "Selecciona una cancha con precio válido para reservar.", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupListeners() {
@@ -165,18 +178,29 @@ class BookFieldActivity : AppCompatActivity() {
     }
 
     private fun updatePriceDisplay() {
+        if (pricePerHour <= 0) {
+            binding.tvTotalPrice.text = "Total: N/A"
+            return
+        }
         val totalPrice = pricePerHour * durationHours
-        binding.tvTotalPrice.text = "Total: $${totalPrice.toInt()}"
+        val formatter = NumberFormat.getCurrencyInstance(Locale("es", "CO")).apply {
+            maximumFractionDigits = 0
+        }
+        binding.tvTotalPrice.text = "Total: ${formatter.format(totalPrice)}"
     }
 
     private fun confirmBooking() {
+        if (fieldId.isEmpty() || pricePerHour <= 0) {
+            Toast.makeText(this, "No se puede confirmar la reserva. Selecciona una cancha válida.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val userId = auth.currentUser?.uid
         if (userId == null) {
             Toast.makeText(this, "Debes iniciar sesión para reservar", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Validaciones adicionales
         if (selectedStartTime.get(Calendar.HOUR_OF_DAY) == 0) {
             Toast.makeText(this, "Selecciona la fecha y horarios", Toast.LENGTH_SHORT).show()
             return

@@ -1,4 +1,3 @@
-
 package com.example.kickmatch
 
 import android.Manifest
@@ -42,6 +41,7 @@ class SearchFieldsActivity : AppCompatActivity() {
         setupRecyclerView()
         setupFilters()
         requestLocationPermission()
+        setupFab()
     }
 
     private fun setupToolbar() {
@@ -55,12 +55,32 @@ class SearchFieldsActivity : AppCompatActivity() {
         fieldAdapter = FieldAdapter(
             fields = fields,
             onFieldClick = { field ->
-                Toast.makeText(this, "Detalles de ${field.name}", Toast.LENGTH_SHORT).show()
+                // Abrir detalles solo si la cancha tiene información completa
+                val intent = Intent(this, FieldDetailActivity::class.java)
+                if (field.id.isNotEmpty() && !field.id.startsWith("osm")) {
+                    intent.putExtra("fieldId", field.id)
+                } else {
+                    val intent = Intent(this, BookFieldActivity::class.java) // ¡Sintaxis corregida!
+                    intent.putExtra("field", field)
+                    startActivity(intent)
+                }
+                startActivity(intent)
             },
             onBookClick = { field ->
-                val intent = Intent(this, FieldDetailActivity::class.java)
-                intent.putExtra("fieldId", field.id)
-                startActivity(intent)
+                // Solo permitir reservar si tiene ID válido y precio
+                if (field.id.isNotEmpty() &&
+                    !field.id.startsWith("osm") &&
+                    field.pricePerHour > 0) {
+                    val intent = Intent(this, FieldDetailActivity::class.java)
+                    intent.putExtra("fieldId", field.id)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Esta cancha no está disponible para reserva en línea. Contacta directamente.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             },
             showAdminControls = false
         )
@@ -174,7 +194,6 @@ class SearchFieldsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun calculateDistances() {
         currentLocation?.let { userLocation ->
             allFields.forEach { field ->
@@ -249,16 +268,38 @@ class SearchFieldsActivity : AppCompatActivity() {
         val priceRange = binding.rangeSliderPrice.values
         val minPrice = priceRange[0].toDouble() * 1000
         val maxPrice = priceRange[1].toDouble() * 1000
+
         fields.addAll(allFields.filter { field ->
             val matchesQuery = query.isEmpty() ||
                     field.name.lowercase().contains(query) ||
                     field.address.lowercase().contains(query)
             val matchesType = selectedType == null || field.type == selectedType
             val matchesSurface = selectedSurface == null || field.surface == selectedSurface
-            val matchesPrice = field.pricePerHour in minPrice..maxPrice
+
+            // Si no tiene precio (Geoapify), ignorar el filtro de precio
+            val matchesPrice = if (field.pricePerHour <= 0) {
+                true
+            } else {
+                field.pricePerHour in minPrice..maxPrice
+            }
+
             matchesQuery && matchesType && matchesSurface && matchesPrice
         })
+
         fieldAdapter.notifyDataSetChanged()
+    }
+
+    private fun setupFab() {
+        binding.fabBookField.setOnClickListener {
+            // Navega directamente a la actividad de reserva
+            val intent = Intent(this, BookFieldActivity::class.java)
+            startActivity(intent)
+
+            // ADVERTENCIA: BookFieldActivity espera fieldId, fieldName, pricePerHour.
+            // Si la abres sin extras, la actividad podría mostrar datos vacíos
+            // o requerir que el usuario seleccione una cancha primero.
+            // Asegúrate de que BookFieldActivity maneje el caso de que no haya extras.
+        }
     }
 
     private fun clearFilters() {

@@ -1,5 +1,6 @@
 package com.example.kickmatch.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +33,7 @@ class FieldAdapter(
         return FieldViewHolder(binding)
     }
 
+
     override fun onBindViewHolder(holder: FieldViewHolder, position: Int) {
         holder.bind(fields[position])
     }
@@ -42,12 +44,18 @@ class FieldAdapter(
         private val binding: ItemFieldBinding
     ) : RecyclerView.ViewHolder(binding.root) {
 
+
         fun bind(field: Field) {
             binding.apply {
 
                 tvFieldName.text = field.name
                 tvFieldAddress.text = field.address
-                tvFieldPrice.text = "$${field.pricePerHour}/hora"
+
+                if (field.pricePerHour > 0) {
+                    tvFieldPrice.text = "$${field.pricePerHour.toInt()}/hora"
+                } else {
+                    tvFieldPrice.text = "Contactar administrador"
+                }
 
                 tvFieldRating.text = String.format("%.1f", field.rating)
                 tvRatingCount.text = "(${field.totalRatings})"
@@ -68,20 +76,20 @@ class FieldAdapter(
                     ivFieldPhoto.setImageResource(R.drawable.ic_stadium)
                 }
 
+                Log.d("AMENITIES", "Amenidades de ${field.name}: ${field.amenities}")
+
+
                 containerAmenities.removeAllViews()
 
                 if (field.amenities.isNullOrEmpty()) {
-
                     val tv = TextView(itemView.context).apply {
                         text = "Sin amenidades"
                         textSize = 12f
                     }
                     containerAmenities.addView(tv)
-
                 } else {
                     field.amenities.forEach { amenityId ->
                         val iconView = ImageView(itemView.context)
-
                         iconView.setImageResource(
                             AmenitiesIcons.getIconForAmenity(amenityId)
                         )
@@ -93,7 +101,6 @@ class FieldAdapter(
                         params.setMargins(12, 0, 12, 0)
 
                         iconView.layoutParams = params
-
                         containerAmenities.addView(iconView)
                     }
                 }
@@ -103,11 +110,10 @@ class FieldAdapter(
                 }
 
                 if (showAdminControls) {
-
                     btnEdit.visibility = View.VISIBLE
                     btnDelete.visibility = View.VISIBLE
                     switchActive.visibility = View.VISIBLE
-                    btnBook?.visibility = View.GONE
+                    btnBook.visibility = View.GONE
 
                     btnEdit.setOnClickListener { onEditClick?.invoke(field) }
                     btnDelete.setOnClickListener { onDeleteClick?.invoke(field) }
@@ -118,15 +124,23 @@ class FieldAdapter(
                             onToggleActiveClick?.invoke(field)
                         }
                     }
-
                 } else {
-
                     btnEdit.visibility = View.GONE
                     btnDelete.visibility = View.GONE
                     switchActive.visibility = View.GONE
-                    btnBook?.visibility = View.VISIBLE
+                    btnBook.visibility = View.VISIBLE
 
-                    btnBook?.setOnClickListener { onBookClick?.invoke(field) }
+                    btnBook.isEnabled = field.id.isNotEmpty() &&
+                            !field.id.startsWith("osm") &&
+                            field.pricePerHour > 0
+
+                    btnBook.setOnClickListener {
+                        if (field.id.isNotEmpty() &&
+                            !field.id.startsWith("osm") &&
+                            field.pricePerHour > 0) {
+                            onBookClick?.invoke(field)
+                        }
+                    }
                 }
             }
         }

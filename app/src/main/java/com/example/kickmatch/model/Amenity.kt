@@ -37,13 +37,13 @@ data class Amenity(
                 Amenity(
                     id = "bleachers",
                     name = "Graderías",
-                    iconName = "ic_bleachers",
+                    iconName = "ic_bleacher",
                     isAvailable = false
                 ),
                 Amenity(
                     id = "cafeteria",
                     name = "Cafetería",
-                    iconName = "ic_restaurant",
+                    iconName = "ic_cafeteria",
                     isAvailable = false
                 ),
                 Amenity(

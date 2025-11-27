@@ -89,17 +89,15 @@
                     android:textStyle="bold"/>
             </LinearLayout>
 
-            <LinearLayout
+            <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/container_amenities"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:gravity="start"
+                app:flexWrap="wrap"
+                app:justifyContent="flex_start"
                 android:paddingVertical="4dp">
-            </LinearLayout>
-
-
+            </com.google.android.flexbox.FlexboxLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
